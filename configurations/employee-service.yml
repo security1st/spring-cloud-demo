@@ -31,4 +31,4 @@ management:
     health:
       show-details: always
 
-name: test6
+name: test7
