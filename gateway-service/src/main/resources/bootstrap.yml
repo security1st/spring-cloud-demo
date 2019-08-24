@@ -4,3 +4,25 @@ spring:
   cloud:
     config:
       uri: http://localhost:8088
+
+--- # Method--请求Method
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    password: 123456
+  cloud:
+    gateway:
+      routes:
+        - id: method_route
+          uri: lb://employee-service
+          predicates:
+            - Method=GET
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: '#{@hostAddrKeyResolver}' #用于限流的键的解析器的 Bean 对象的名字。它使用 SpEL 表达式根据#{@beanName}从 Spring 容器中获取 Bean 对象
+                redis-rate-limiter.replenishRate: 1 #令牌桶填充速率（其实也就是希望用户平均每秒执行多少请求。但是令牌桶优点是允许瞬间的激增请求）
+                redis-rate-limiter.burstCapacity: 3 #令牌桶总容量。
+  profiles: method_route

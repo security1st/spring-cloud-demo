@@ -2,7 +2,7 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8061/eureka/
-
+      # defaultZone: http://admin:123456@eureka2:8001/eureka/,http://admin:123456@eureka3:8002/eureka/,http://admin:123456@eureka2:8003/eureka/
 spring:
   rabbitmq:
     host: localhost
