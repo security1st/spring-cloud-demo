@@ -8,8 +8,3 @@ spring:
           uri: https://github.com/security1st/spring-cloud-demo.git
           search-paths: configurations
           default-label: config-refresh
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
