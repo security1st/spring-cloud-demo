@@ -1,4 +1,4 @@
-package hl.sc.demo.proxy;
+package hl.sc.demo.zuul;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,10 +8,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableZuulProxy
 @EnableSwagger2
-public class ProxyApplication {
+public class ZuulApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ProxyApplication.class, args);
+        SpringApplication.run(ZuulApplication.class, args);
     }
 
 }
