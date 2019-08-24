@@ -1,12 +1,12 @@
 package hl.sc.demo.department;
 
+import hl.sc.demo.department.model.Department;
 import hl.sc.demo.department.repository.DepartmentRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
-import hl.sc.demo.department.model.Department;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -37,10 +37,10 @@ public class DepartmentApplication {
 	@Bean
 	DepartmentRepository repository() {
 		DepartmentRepository repository = new DepartmentRepository();
-		repository.add(new Department(1L, "Development"));
-		repository.add(new Department(1L, "Operations"));
-		repository.add(new Department(2L, "Development"));
-		repository.add(new Department(2L, "Operations"));		
+        repository.add(new Department(1L, "Development")).block();
+        repository.add(new Department(1L, "Operations")).block();
+        repository.add(new Department(2L, "Development")).block();
+        repository.add(new Department(2L, "Operations")).block();
 		return repository;
 	}
 	

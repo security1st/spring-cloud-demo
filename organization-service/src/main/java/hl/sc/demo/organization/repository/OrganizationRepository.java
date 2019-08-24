@@ -1,28 +1,31 @@
 package hl.sc.demo.organization.repository;
 
 import hl.sc.demo.organization.model.Organization;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class OrganizationRepository {
 
 	private List<Organization> organizations = new ArrayList<>();
-	
-	public Organization add(Organization organization) {
-		organization.setId((long) (organizations.size()+1));
-		organizations.add(organization);
-		return organization;
+
+    public Mono<Organization> add(Organization organization) {
+        return Mono.just(organization)
+                .doOnSuccess(o -> {
+                    o.setId((long) (organizations.size() + 1));
+                    organizations.add(o);
+                });
 	}
-	
-	public Organization findById(Long id) {
-		Optional<Organization> organization = organizations.stream().filter(a -> a.getId().equals(id)).findFirst();
-		return organization.orElse(null);
+
+    public Mono<Organization> findById(Long id) {
+        return Flux.fromIterable(organizations)
+                .filter(a -> a.getId().equals(id)).next();
 	}
-	
-	public List<Organization> findAll() {
-		return organizations;
+
+    public Flux<Organization> findAll() {
+        return Flux.fromIterable(organizations);
 	}
 	
 }

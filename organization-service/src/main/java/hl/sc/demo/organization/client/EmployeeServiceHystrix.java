@@ -3,9 +3,7 @@ package hl.sc.demo.organization.client;
 import hl.sc.demo.organization.model.Employee;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
+import reactor.core.publisher.Flux;
 
 /**
  * @author: hl
@@ -15,8 +13,8 @@ import java.util.List;
 @Slf4j
 class EmployeeServiceHystrix implements EmployeeClient {
     @Override
-    public List<Employee> findByOrganization(Long organizationId) {
+    public Flux<Employee> findByOrganization(Long organizationId) {
         log.warn("Fallback Employee find: organizationId={}", organizationId);
-        return new ArrayList<>();
+        return Flux.empty();
     }
 }

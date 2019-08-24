@@ -1,37 +1,41 @@
 package hl.sc.demo.employee.repository;
 
 import hl.sc.demo.employee.model.Employee;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class EmployeeRepository {
 
 	private List<Employee> employees = new ArrayList<>();
-	
-	public Employee add(Employee employee) {
-		employee.setId((long) (employees.size()+1));
-		employees.add(employee);
-		return employee;
+
+	public Mono<Employee> add(Employee employee) {
+		return Mono.just(employee)
+				.doOnSuccess(d -> {
+					d.setId((long) (employees.size() + 1));
+					employees.add(d);
+				});
 	}
-	
-	public Employee findById(Long id) {
-		Optional<Employee> employee = employees.stream().filter(a -> a.getId().equals(id)).findFirst();
-		return employee.orElse(null);
+
+	public Mono<Employee> findById(Long id) {
+		return Flux.fromIterable(employees)
+				.filter(a -> a.getId().equals(id)).next();
 	}
-	
-	public List<Employee> findAll() {
-		return employees;
+
+	public Flux<Employee> findAll() {
+		return Flux.fromIterable(employees);
 	}
-	
-	public List<Employee> findByDepartment(Long departmentId) {
-		return employees.stream().filter(a -> a.getDepartmentId().equals(departmentId)).collect(Collectors.toList());
+
+	public Flux<Employee> findByDepartment(Long departmentId) {
+		return Flux.fromIterable(employees)
+				.filter(a -> a.getDepartmentId().equals(departmentId));
 	}
-	
-	public List<Employee> findByOrganization(Long organizationId) {
-		return employees.stream().filter(a -> a.getOrganizationId().equals(organizationId)).collect(Collectors.toList());
+
+	public Flux<Employee> findByOrganization(Long organizationId) {
+		return Flux.fromIterable(employees)
+				.filter(a -> a.getOrganizationId().equals(organizationId));
 	}
 	
 }

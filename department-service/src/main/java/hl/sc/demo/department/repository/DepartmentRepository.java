@@ -1,33 +1,36 @@
 package hl.sc.demo.department.repository;
 
 import hl.sc.demo.department.model.Department;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class DepartmentRepository {
 
 	private List<Department> departments = new ArrayList<>();
-	
-	public Department add(Department department) {
-		department.setId((long) (departments.size()+1));
-		departments.add(department);
-		return department;
+
+	public Mono<Department> add(Department department) {
+		return Mono.just(department)
+				.doOnSuccess(d -> {
+					d.setId((long) (departments.size() + 1));
+					departments.add(d);
+				});
 	}
-	
-	public Department findById(Long id) {
-		Optional<Department> department = departments.stream().filter(a -> a.getId().equals(id)).findFirst();
-		return department.orElse(null);
+
+	public Mono<Department> findById(Long id) {
+		return Flux.fromIterable(departments)
+				.filter(a -> a.getId().equals(id)).next();
 	}
-	
-	public List<Department> findAll() {
-		return departments;
+
+	public Flux<Department> findAll() {
+		return Flux.fromIterable(departments);
 	}
-	
-	public List<Department> findByOrganization(Long organizationId) {
-		return departments.stream().filter(a -> a.getOrganizationId().equals(organizationId)).collect(Collectors.toList());
+
+	public Flux<Department> findByOrganization(Long organizationId) {
+		return Flux.fromIterable(departments)
+				.filter(a -> a.getOrganizationId().equals(organizationId));
 	}
 	
 }

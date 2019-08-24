@@ -1,12 +1,12 @@
 package hl.sc.demo.organization;
 
+import hl.sc.demo.organization.model.Organization;
 import hl.sc.demo.organization.repository.OrganizationRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
-import hl.sc.demo.organization.model.Organization;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -37,8 +37,10 @@ public class OrganizationApplication {
 	@Bean
 	OrganizationRepository repository() {
 		OrganizationRepository repository = new OrganizationRepository();
-		repository.add(new Organization("Microsoft", "Redmond, Washington, USA"));
-		repository.add(new Organization("Oracle", "Redwood City, California, USA"));	
+        repository.add(new Organization("Microsoft", "Redmond, Washington, " +
+                "USA")).block();
+        repository.add(new Organization("Oracle", "Redwood City, California, " +
+                "USA")).block();
 		return repository;
 	}
 	

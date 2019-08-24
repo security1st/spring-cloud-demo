@@ -4,13 +4,12 @@ import hl.sc.demo.organization.model.Employee;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
 
 @FeignClient(name = "employee-service", fallback = EmployeeServiceHystrix.class)
 public interface EmployeeClient {
 
 	@GetMapping("/organization/{organizationId}")
-	List<Employee> findByOrganization(@PathVariable("organizationId") Long organizationId);
+	Flux<Employee> findByOrganization(@PathVariable("organizationId") Long organizationId);
 	
 }
