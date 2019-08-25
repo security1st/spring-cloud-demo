@@ -14,50 +14,59 @@ import reactor.core.publisher.Mono;
 @RestController
 public class OrganizationController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(OrganizationController.class);
-	
-	@Autowired
-    OrganizationRepository repository;
-	@Autowired
-	DepartmentClient departmentClient;
-	@Autowired
-	EmployeeClient employeeClient;
-	
-	@PostMapping
-	public Mono<Organization> add(@RequestBody Organization organization) {
-		LOGGER.info("Organization add: {}", organization);
-		return repository.add(organization);
-	}
-	
-	@GetMapping
-	public Flux<Organization> findAll() {
-		LOGGER.info("Organization find");
-		return repository.findAll();
-	}
-	
-	@GetMapping("/{id}")
-	public Mono<Organization> findById(@PathVariable("id") Long id) {
-		LOGGER.info("Organization find: id={}", id);
-		return repository.findById(id);
-	}
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrganizationController.class);
 
-	@GetMapping("/{id}/with-departments")
-	public Mono<Organization> findByIdWithDepartments(@PathVariable("id") Long id) {
-		LOGGER.info("Organization find: id={}", id);
-		return repository.findById(id).doOnSuccess(d -> d.setDepartments(departmentClient.findByOrganization(d.getId()).collectList().block()));
-	}
-	
-	@GetMapping("/{id}/with-departments-and-employees")
-	public Mono<Organization> findByIdWithDepartmentsAndEmployees(@PathVariable(
-			"id") Long id) {
-		LOGGER.info("Organization find: id={}", id);
-		return repository.findById(id).doOnSuccess(d -> d.setDepartments(departmentClient.findByOrganizationWithEmployees(d.getId()).collectList().block()));
-	}
-	
-	@GetMapping("/{id}/with-employees")
-	public Mono<Organization> findByIdWithEmployees(@PathVariable("id") Long id) {
-		LOGGER.info("Organization find: id={}", id);
-		return repository.findById(id).doOnSuccess(d -> d.setEmployees(employeeClient.findByOrganization(d.getId()).collectList().block()));
-	}
-	
+    @Autowired
+    OrganizationRepository repository;
+    @Autowired
+    DepartmentClient departmentClient;
+    @Autowired
+    EmployeeClient employeeClient;
+
+    @PostMapping
+    public Mono<Organization> add(@RequestBody Organization organization) {
+        LOGGER.info("Organization add: {}", organization);
+        return repository.add(organization);
+    }
+
+    @GetMapping
+    public Flux<Organization> findAll() {
+        LOGGER.info("Organization find");
+        return repository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Mono<Organization> findById(@PathVariable("id") Long id) {
+        LOGGER.info("Organization find: id={}", id);
+        return repository.findById(id);
+    }
+
+    @GetMapping("/{id}/with-departments")
+    public Mono<Organization> findByIdWithDepartments(@PathVariable("id") Long id) {
+        LOGGER.info("Organization find: id={}", id);
+        return repository.findById(id).map(o -> {
+            o.setDepartments(departmentClient.findByOrganization(o.getId()));
+            return o;
+        });
+    }
+
+    @GetMapping("/{id}/with-departments-and-employees")
+    public Mono<Organization> findByIdWithDepartmentsAndEmployees(@PathVariable(
+            "id") Long id) {
+        LOGGER.info("Organization find: id={}", id);
+        return repository.findById(id).map(o -> {
+            o.setDepartments(departmentClient.findByOrganizationWithEmployees(o.getId()));
+            return o;
+        });
+    }
+
+    @GetMapping("/{id}/with-employees")
+    public Mono<Organization> findByIdWithEmployees(@PathVariable("id") Long id) {
+        LOGGER.info("Organization find: id={}", id);
+        return repository.findById(id).map(o -> {
+            o.setEmployees(employeeClient.findByOrganization(o.getId()));
+            return o;
+        });
+    }
+
 }
