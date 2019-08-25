@@ -23,8 +23,8 @@
     </modules>
     <properties>
         <java.version>11</java.version>
-        <!--<swagger.version>3.0.0-SNAPSHOT</swagger.version>-->
-        <swagger.version>2.9.2</swagger.version>
+        <swagger.version>3.0.0-SNAPSHOT</swagger.version>
+        <!--<swagger.version>2.9.2</swagger.version>-->
     </properties>
 
     <repositories>

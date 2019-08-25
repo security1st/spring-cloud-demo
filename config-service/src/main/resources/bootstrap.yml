@@ -7,4 +7,4 @@ spring:
         git:
           uri: https://github.com/security1st/spring-cloud-demo.git
           search-paths: configurations
-          default-label: config-refresh
+          default-label: webflux
