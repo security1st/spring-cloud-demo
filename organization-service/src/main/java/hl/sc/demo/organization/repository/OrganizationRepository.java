@@ -9,23 +9,24 @@ import java.util.List;
 
 public class OrganizationRepository {
 
-	private List<Organization> organizations = new ArrayList<>();
+    private List<Organization> organizations = new ArrayList<>();
 
     public Mono<Organization> add(Organization organization) {
         return Mono.just(organization)
-                .doOnSuccess(o -> {
+                .map(o -> {
                     o.setId((long) (organizations.size() + 1));
                     organizations.add(o);
+                    return o;
                 });
-	}
+    }
 
     public Mono<Organization> findById(Long id) {
         return Flux.fromIterable(organizations)
-                .filter(a -> a.getId().equals(id)).next();
-	}
+                .filter(o -> o.getId().equals(id)).next();
+    }
 
     public Flux<Organization> findAll() {
         return Flux.fromIterable(organizations);
-	}
-	
+    }
+
 }

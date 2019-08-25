@@ -18,23 +18,23 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class EmployeeApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(EmployeeApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(EmployeeApplication.class, args);
+    }
 
-	@Bean
-	public Docket swaggerPersonApi10() {
-		return new Docket(DocumentationType.SWAGGER_2)
-				.select()
-					.apis(RequestHandlerSelectors.basePackage("hl.sc.demo.employee.controller"))
-					.paths(PathSelectors.any())
-				.build()
-				.apiInfo(new ApiInfoBuilder().version("1.0").title("Employee API").description("Documentation Employee API v1.0").build());
-	}
-	
-	@Bean
-	EmployeeRepository repository() {
-		EmployeeRepository repository = new EmployeeRepository();
+    @Bean
+    public Docket swaggerPersonApi10() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("hl.sc.demo.employee.controller"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(new ApiInfoBuilder().version("1.0").title("Employee API").description("Documentation Employee API v1.0").build());
+    }
+
+    @Bean
+    EmployeeRepository repository() {
+        EmployeeRepository repository = new EmployeeRepository();
         repository.add(new Employee(1L, 1L, "John Smith", 34, "Analyst")).block();
         repository.add(new Employee(1L, 1L, "Darren Hamilton", 37, "Manager")).block();
         repository.add(new Employee(1L, 1L, "Tom Scott", 26, "Developer")).block();
@@ -46,7 +46,7 @@ public class EmployeeApplication {
         repository.add(new Employee(2L, 4L, "Steve Franklin", 25,
                 "Developer")).block();
         repository.add(new Employee(2L, 4L, "Elisabeth Smith", 30, "Developer")).block();
-		return repository;
-	}
-	
+        return repository;
+    }
+
 }
