@@ -25,7 +25,7 @@ public class ProxyApi {
         return () -> {
             List<SwaggerResource> resources = new ArrayList<>();
             properties.getRoutes()
-                    .forEach(route -> resources.add(createResource(route.getUri().getHost(), route.getId(),"2.0")));
+                    .forEach(route -> resources.add(createResource(route.getUri().getHost(), route.getId(), "2.0")));
             return resources;
         };
     }
