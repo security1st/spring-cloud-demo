@@ -37,6 +37,7 @@ wget https://raw.githubusercontent.com/antirez/redis/4.0/redis.conf -O conf/redi
 sed -i 's/logfile ""/logfile "access.log"/' conf/redis.conf
 sed -i 's/# requirepass foobared/requirepass 123456/' conf/redis.conf
 sed -i 's/appendonly no/appendonly yes/' conf/redis.conf
+sed -i 's/bind 127.0.0.1/bind 0.0.0.0/' conf/redis.conf
 
 # 命令分解
 docker run \
