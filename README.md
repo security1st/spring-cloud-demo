@@ -1,8 +1,22 @@
-## 微服务示例
+# 微服务示例
 
+## 环境
 - JDK： 11
 - Spring Boot: 2.1.7
 - Spring Cloud: Greenwich.SR2
+
+## 基本功能
+- Euraka(Cluster)
+- Spring Config Server
+- Spring Cloud Gateway
+- Zuul
+- Swagger2
+- 调用链跟踪(Sleuth + Zipkin)
+- 配置动态更新(Github)
+- docker示例
+- 限速
+- 回退（fallback）
+- webflux(响应式编程)
 
 ### 手动更新配置
 ```shell script
