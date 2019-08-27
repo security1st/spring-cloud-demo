@@ -42,7 +42,7 @@ public class EmployeeApplication {
     ReactiveRedisConnectionFactory factory;
 
     @Autowired
-    ReactiveRedisOperations<String, Employee> coffeeOps;
+    ReactiveRedisOperations<String, Employee> reactiveListOperations;
 
     @Bean
     EmployeeRepository repository() {
@@ -60,11 +60,14 @@ public class EmployeeApplication {
                         "Developer"),
                 new Employee(2L, 4L, "Elisabeth Smith", 30, "Developer"));
 
-        factory.getReactiveConnection().serverCommands().flushAll().thenMany(
-                Flux.fromStream(employeeStream)
-                        .flatMap(coffee -> coffeeOps.opsForList().rightPush(
-                                EmployeeRepository.EMPLOYEE, coffee)))
-                .thenMany(coffeeOps.opsForList().range(EmployeeRepository.EMPLOYEE, 0, -1)
+        factory.getReactiveConnection()
+                .serverCommands()
+                .flushAll()
+                .thenMany(
+                        Flux.fromStream(employeeStream)
+                                .flatMap(coffee -> reactiveListOperations.opsForList().rightPush(
+                                        EmployeeRepository.EMPLOYEE, coffee)))
+                .thenMany(reactiveListOperations.opsForList().range(EmployeeRepository.EMPLOYEE, 0, -1)
                         .map(Employee::getName))
                 .subscribe(System.out::println);
         return repository;
