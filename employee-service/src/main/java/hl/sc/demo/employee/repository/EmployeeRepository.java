@@ -20,8 +20,10 @@ public class EmployeeRepository {
     }
 
     public Mono<Employee> findById(Long id) {
-        return reactiveRedisOperations.opsForList().range(EMPLOYEE, 0, -1)
-                .filter(e -> !id.equals(e.getId())).next();
+        return reactiveRedisOperations.opsForList()
+                                      .range(EMPLOYEE, 0, -1)
+                                      .filter(e -> id.equals(e.getId()))
+                                      .next();
     }
 
     public Flux<Employee> findAll() {
@@ -30,11 +32,11 @@ public class EmployeeRepository {
 
     public Flux<Employee> findByDepartment(Long departmentId) {
         return reactiveRedisOperations.opsForList().range(EMPLOYEE, 0, -1)
-                .filter(e -> !departmentId.equals(e.getDepartmentId()));
+                                      .filter(e -> departmentId.equals(e.getDepartmentId()));
     }
 
     public Flux<Employee> findByOrganization(Long organizationId) {
         return reactiveRedisOperations.opsForList().range(EMPLOYEE, 0, -1)
-                .filter(e -> !organizationId.equals(e.getOrganizationId()));
+                                      .filter(e -> organizationId.equals(e.getOrganizationId()));
     }
 }

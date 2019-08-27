@@ -2,6 +2,7 @@ package hl.sc.demo.employee;
 
 import hl.sc.demo.employee.model.Employee;
 import hl.sc.demo.employee.repository.EmployeeRepository;
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -17,7 +19,7 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2WebFlux;
 
-import java.util.stream.Stream;
+import java.util.concurrent.atomic.AtomicLong;
 
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -44,10 +46,12 @@ public class EmployeeApplication {
     @Autowired
     ReactiveRedisOperations<String, Employee> reactiveListOperations;
 
+    private AtomicLong count = new AtomicLong();
+
     @Bean
     EmployeeRepository repository() {
         EmployeeRepository repository = new EmployeeRepository();
-        var employeeStream = Stream.of(
+        var employees = new Employee[]{
                 new Employee(1L, 1L, "John Smith", 34, "Analyst"),
                 new Employee(1L, 1L, "Darren Hamilton", 37, "Manager"),
                 new Employee(1L, 1L, "Tom Scott", 26, "Developer"),
@@ -58,18 +62,23 @@ public class EmployeeApplication {
                 new Employee(2L, 3L, "Andrew Campton", 30, "Manager"),
                 new Employee(2L, 4L, "Steve Franklin", 25,
                         "Developer"),
-                new Employee(2L, 4L, "Elisabeth Smith", 30, "Developer"));
-
+                new Employee(2L, 4L, "Elisabeth Smith", 30, "Developer")};
         factory.getReactiveConnection()
                 .serverCommands()
                 .flushAll()
                 .thenMany(
-                        Flux.fromStream(employeeStream)
-                                .flatMap(coffee -> reactiveListOperations.opsForList().rightPush(
-                                        EmployeeRepository.EMPLOYEE, coffee)))
-                .thenMany(reactiveListOperations.opsForList().range(EmployeeRepository.EMPLOYEE, 0, -1)
-                        .map(Employee::getName))
+                        Flux.fromArray(employees)
+                            .flatMap(this::apply))
+               .thenMany(reactiveListOperations.opsForList()
+                                               .range(EmployeeRepository.EMPLOYEE, 0, -1))
                 .subscribe(System.out::println);
         return repository;
+    }
+
+    private Publisher<? extends Employee> apply(Employee employee) {
+        employee.setId(count.incrementAndGet());
+        return reactiveListOperations.opsForList()
+                                     .rightPush(EmployeeRepository.EMPLOYEE, employee)
+                                     .then(Mono.just(employee));
     }
 }

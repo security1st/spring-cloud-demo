@@ -54,7 +54,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/hi")
-    public String hi() {
-        return "hi, " + name;
+    public Mono<String> hi() {
+        return Mono.just("hi, " + name);
     }
 }
