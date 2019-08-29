@@ -40,11 +40,11 @@ public class EmployeeApplication {
                 .apiInfo(new ApiInfoBuilder().version("1.0").title("Employee API").description("Documentation Employee API v1.0").build());
     }
 
-    @Autowired
+    /*@Autowired
     ReactiveRedisConnectionFactory factory;
 
     @Autowired
-    ReactiveRedisOperations<String, Employee> reactiveListOperations;
+    ReactiveRedisOperations<String, Employee> redisOperations;
 
     private AtomicLong count = new AtomicLong();
 
@@ -69,7 +69,7 @@ public class EmployeeApplication {
                 .thenMany(
                         Flux.fromArray(employees)
                             .flatMap(this::apply))
-               .thenMany(reactiveListOperations.opsForList()
+               .thenMany(redisOperations.opsForList()
                                                .range(EmployeeRepository.EMPLOYEE, 0, -1))
                 .subscribe(System.out::println);
         return repository;
@@ -77,8 +77,8 @@ public class EmployeeApplication {
 
     private Publisher<? extends Employee> apply(Employee employee) {
         employee.setId(count.incrementAndGet());
-        return reactiveListOperations.opsForList()
+        return redisOperations.opsForList()
                                      .rightPush(EmployeeRepository.EMPLOYEE, employee)
                                      .then(Mono.just(employee));
-    }
+    }*/
 }
