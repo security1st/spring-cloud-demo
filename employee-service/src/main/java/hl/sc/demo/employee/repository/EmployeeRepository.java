@@ -15,8 +15,14 @@ public class EmployeeRepository {
     private ReactiveRedisOperations<String, Employee> reactiveRedisOperations;
 
     public Mono<Employee> add(Employee employee) {
-        return reactiveRedisOperations.opsForList().rightPush(EMPLOYEE, employee)
-                .then(Mono.just(employee));
+        return findAll().count().map(count -> {
+            employee.setId(count + 1);
+            return employee;
+        }).then(
+                reactiveRedisOperations.opsForList()
+                                       .rightPush(EMPLOYEE, employee)
+                                       .then(Mono.just(employee))
+        );
     }
 
     public Mono<Employee> findById(Long id) {
