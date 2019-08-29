@@ -39,13 +39,15 @@ sed -i 's/# requirepass foobared/requirepass 123456/' conf/redis.conf
 sed -i 's/appendonly no/appendonly yes/' conf/redis.conf
 sed -i 's/bind 127.0.0.1/bind 0.0.0.0/' conf/redis.conf
 
+
+docker run -p 6379:6379 -v $PWD/data:/data:rw -v $PWD/conf/redis.conf:/etc/redis/redis.conf:ro --privileged=true --name redis -d redis redis-server /etc/redis/redis.conf 
 # 命令分解
 docker run \
 -p 6379:6379 \ # 端口映射 宿主机:容器
 -v $PWD/data:/data:rw \ # 映射数据目录 rw 为读写
 -v $PWD/conf/redis.conf:/etc/redis/redis.conf:ro \ # 挂载配置文件 ro 为readonly
 --privileged=true \ # 给与一些权限
---name myredis \ # 给容器起个名字
+--name redis \ # 给容器起个名字
 -d redis redis-server /etc/redis/redis.conf # deamon 运行容器 并使用配置文件启动容器内的 redis-server 
 
 # redis-cli 访问
