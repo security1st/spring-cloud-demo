@@ -23,7 +23,8 @@ public class Configuration {
                 Employee> builder =
                 RedisSerializationContext.newSerializationContext(new StringRedisSerializer());
 
-        RedisSerializationContext<String, Employee> context = builder.value(serializer).build();
+        RedisSerializationContext<String, Employee> context = builder.value(serializer)
+                                                                     .build();
 
         return new ReactiveRedisTemplate<>(factory, context);
     }

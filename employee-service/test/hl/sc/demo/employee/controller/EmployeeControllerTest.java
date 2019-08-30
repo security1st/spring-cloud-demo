@@ -1,7 +1,7 @@
 package hl.sc.demo.employee.controller;
 
 import hl.sc.demo.employee.model.Employee;
-import hl.sc.demo.employee.repository.EmployeeRepository;
+import hl.sc.demo.employee.repository.EmployeeRedisRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 @ImportAutoConfiguration(RefreshAutoConfiguration.class)
 public class EmployeeControllerTest {
     @MockBean
-    EmployeeRepository employeeRepository;
+    EmployeeRedisRepository employeeRedisRepository;
 
     @Autowired
     private WebTestClient testClient;
@@ -37,19 +37,19 @@ public class EmployeeControllerTest {
     public void testAdd() {
         // prepare data and mock's behaviour
         Employee empStub = new Employee(5L, 5L, "tree", 50, "12000");
-        when(employeeRepository.add(any(Employee.class)))
+        when(employeeRedisRepository.add(any(Employee.class)))
                 .thenReturn(Mono.just(empStub));
 
         var responseBody = testClient.post()
-                .uri("/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromObject(empStub))
-                .exchange()
-                .expectStatus()
-                .isOk()
-                .expectBody(Employee.class)
-                .returnResult()
-                .getResponseBody();
+                                     .uri("/")
+                                     .contentType(MediaType.APPLICATION_JSON)
+                                     .body(BodyInserters.fromObject(empStub))
+                                     .exchange()
+                                     .expectStatus()
+                                     .isOk()
+                                     .expectBody(Employee.class)
+                                     .returnResult()
+                                     .getResponseBody();
 
         Assert.assertNotNull(responseBody);
         Assert.assertEquals(responseBody.getName(),
@@ -59,9 +59,9 @@ public class EmployeeControllerTest {
     @Test
     public void testHi() {
         testClient.get().uri("/hi")
-                .exchange()
-                .expectStatus()
-                .isOk()
-                .expectBody().consumeWith(System.out::println);
+                  .exchange()
+                  .expectStatus()
+                  .isOk()
+                  .expectBody().consumeWith(System.out::println);
     }
 }

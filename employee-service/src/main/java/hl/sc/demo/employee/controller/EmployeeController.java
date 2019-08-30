@@ -1,15 +1,19 @@
 package hl.sc.demo.employee.controller;
 
 import hl.sc.demo.employee.model.Employee;
-import hl.sc.demo.employee.repository.EmployeeRepository;
+import hl.sc.demo.employee.repository.EmployeeMongoRepository;
+import hl.sc.demo.employee.repository.EmployeeRedisRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.math.BigInteger;
 
 @RefreshScope
 @RestController
@@ -18,39 +22,51 @@ public class EmployeeController {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeController.class);
 
     @Autowired
-    EmployeeRepository repository;
-
+    EmployeeRedisRepository employeeRedisRepository;
+    @Autowired
+    EmployeeMongoRepository employeeMongoRepository;
     @Value("${name}")
     String name;
+    @Autowired
+    private ReactiveRedisOperations<String, Employee> reactiveRedisOperations;
 
     @PostMapping("/")
     public Mono<Employee> add(@RequestBody Employee employee) {
         LOGGER.info("Employee add: {}", employee);
-        return repository.add(employee);
+        return employeeMongoRepository.save(employee);
     }
 
     @GetMapping("/{id}")
-    public Mono<Employee> findById(@PathVariable("id") Long id) {
+    public Mono<Employee> findById(@PathVariable("id") BigInteger id) {
         LOGGER.info("Employee find: id={}", id);
-        return repository.findById(id);
+        String key = Employee.EMPLOYEE + "_" + id;
+
+        return reactiveRedisOperations
+                .opsForValue()
+                .get(key)
+                .or(employeeMongoRepository.findById(id)
+                                           .doOnNext(e ->
+                                                   reactiveRedisOperations.opsForValue()
+                                                                          .set(key, e)
+                                           ));
     }
 
     @GetMapping("/")
     public Flux<Employee> findAll() {
         LOGGER.info("Employee find");
-        return repository.findAll();
+        return employeeRedisRepository.findAll();
     }
 
     @GetMapping("/department/{departmentId}")
     public Flux<Employee> findByDepartment(@PathVariable("departmentId") Long departmentId) {
         LOGGER.info("Employee find: departmentId={}", departmentId);
-        return repository.findByDepartment(departmentId);
+        return employeeRedisRepository.findByDepartment(departmentId);
     }
 
     @GetMapping("/organization/{organizationId}")
     public Flux<Employee> findByOrganization(@PathVariable("organizationId") Long organizationId) {
         LOGGER.info("Employee find: organizationId={}", organizationId);
-        return repository.findByOrganization(organizationId);
+        return employeeRedisRepository.findByOrganization(organizationId);
     }
 
     @GetMapping("/hi")
