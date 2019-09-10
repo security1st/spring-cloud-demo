@@ -23,5 +23,10 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost/test
-
+graphql:
+  spqr:
+    gui:
+      enabled: true
+    relay:
+      connection-check-relaxed: true
 name: test8

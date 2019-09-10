@@ -2,12 +2,14 @@ package hl.sc.demo.employee.model;
 
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigInteger;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class Employee {
 
     public static final String EMPLOYEE = "employee";
@@ -18,10 +20,6 @@ public class Employee {
     private String name;
     private int age;
     private String position;
-
-    public Employee() {
-
-    }
 
     public Employee(Long organizationId, Long departmentId, String name, int age, String position) {
         this.organizationId = organizationId;
