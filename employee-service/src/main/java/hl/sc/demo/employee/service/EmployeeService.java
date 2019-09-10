@@ -39,19 +39,32 @@ public class EmployeeService {
         return employeeMongoRepository.save(employee);
     }
 
+    @GraphQLMutation
+    public Mono<BigInteger> delete(BigInteger id) {
+        log.info("Employee delete: id={}", id);
+        String key = Employee.EMPLOYEE + "_" + id;
+        return employeeMongoRepository.deleteById(id)
+                                      .doOnEach(employee -> reactiveRedisOperations
+                                              .opsForValue()
+                                              .delete(key)
+                                              .block()).then(Mono.just(id));
+
+    }
+
     @GraphQLQuery
     public Mono<Employee> findById(BigInteger id) {
         log.info("Employee find: id={}", id);
         String key = Employee.EMPLOYEE + "_" + id;
-
         return reactiveRedisOperations
                 .opsForValue()
                 .get(key)
-                .or(employeeMongoRepository.findById(id)
-                                           .doOnNext(e ->
-                                                   reactiveRedisOperations.opsForValue()
-                                                                          .set(key, e)
-                                           ));
+                .switchIfEmpty(employeeMongoRepository.findById(id)
+                                                      .doOnSuccess(employee ->
+                                                              reactiveRedisOperations
+                                                                      .opsForValue()
+                                                                      .set(key, employee)
+                                                                      .block()
+                                                      ));
     }
 
     @GraphQLQuery
