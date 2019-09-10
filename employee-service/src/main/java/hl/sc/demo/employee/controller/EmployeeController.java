@@ -40,15 +40,16 @@ public class EmployeeController {
     public Mono<Employee> findById(@PathVariable("id") BigInteger id) {
         LOGGER.info("Employee find: id={}", id);
         String key = Employee.EMPLOYEE + "_" + id;
-
         return reactiveRedisOperations
                 .opsForValue()
                 .get(key)
-                .or(employeeMongoRepository.findById(id)
-                                           .doOnNext(e ->
-                                                   reactiveRedisOperations.opsForValue()
-                                                                          .set(key, e)
-                                           ));
+                .switchIfEmpty(employeeMongoRepository.findById(id)
+                                                      .doOnSuccess(employee ->
+                                                              reactiveRedisOperations
+                                                                      .opsForValue()
+                                                                      .set(key, employee)
+                                                                      .block()
+                                                      ));
     }
 
     @GetMapping("/")
