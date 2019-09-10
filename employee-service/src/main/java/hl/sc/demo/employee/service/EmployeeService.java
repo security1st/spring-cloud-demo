@@ -8,7 +8,6 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -28,8 +27,6 @@ public class EmployeeService {
     EmployeeRedisRepository employeeRedisRepository;
     @Autowired
     EmployeeMongoRepository employeeMongoRepository;
-    @Value("${name}")
-    String name;
     @Autowired
     private ReactiveRedisOperations<String, Employee> reactiveRedisOperations;
 
@@ -83,10 +80,5 @@ public class EmployeeService {
     public Flux<Employee> findByOrganization(Long organizationId) {
         log.info("Employee find: organizationId={}", organizationId);
         return employeeRedisRepository.findByOrganization(organizationId);
-    }
-
-    @GraphQLQuery
-    public Mono<String> hi() {
-        return Mono.just("hi, " + name);
     }
 }
